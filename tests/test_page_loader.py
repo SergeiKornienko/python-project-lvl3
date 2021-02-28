@@ -19,7 +19,7 @@ def test_download_file():
                 'https://ru.hexlet.io/assets/professions/nodejs.png',
                 content=img,
             )
-            download('https://ru.hexlet.io/courses', dir_for_save=direct)
+            path_html = download('https://ru.hexlet.io/courses', dir_for_save=direct)
         with open(path.join(
                 direct,
                 'ru-hexlet-io-courses_files',
@@ -27,7 +27,7 @@ def test_download_file():
         ),
                   'rb') as infile:
             assert infile.read() == img
-        with open(path.join(*(direct, 'ru-hexlet-io-courses.html'))) as infile:
+        with open(path_html) as infile:
             assert BeautifulSoup(
                 infile.read(),
                 'html5lib',

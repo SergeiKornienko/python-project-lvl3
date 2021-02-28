@@ -63,7 +63,7 @@ def download(url, dir_for_save=''):
             (parsed_html_url['name_without_suffix'] + '.html'),
     ), 'w') as infile:
         infile.write(soup_from_html.decode(formatter="html5"))
-    return dir_for_save + parsed_html_url['name_without_suffix'] + '.html'
+    return join(dir_for_save, (parsed_html_url['name_without_suffix'] + '.html'))
 
 
 # download('http://www.malero-guitare.fr/cours/gratte/')

@@ -1,6 +1,7 @@
 """Function for launch cli-module."""
 import argparse
 import pathlib
+from os import getcwd
 
 
 def get_args():
@@ -9,9 +10,9 @@ def get_args():
     parser.add_argument('url', type=str)
     parser.add_argument(
         '-o', '--output',
-        default=pathlib.Path(''),
+        default=getcwd(),
         type=pathlib.Path,
-        help='output dir (default: "/app")',
+        help='output dir (default: "сurrent directory")',
     )
     parser.add_argument(
         '-V', '--version', help='output the version number',
