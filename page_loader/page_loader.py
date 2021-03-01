@@ -1,70 +1,60 @@
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
-import re
-import requests
-import os
-from os.path import join
-
-
-def parse_url(url):
-    dict_url = {}
-    split_url = os.path.splitext(url)
-    dict_url['url'] = os.path.split(url)[0]
-    parsed_url = urlparse(split_url[0])
-    dict_url['suffix'] = split_url[1]
-    dict_url['netloc'] = re.sub(r'[^a-zA-Z0-9]', '-', parsed_url.netloc)
-    dict_url['path'] = re.sub(r'[^a-zA-Z0-9]', '-', parsed_url.path)
-    url_without_scheme_and_suffix = parsed_url.netloc + parsed_url.path
-    dict_url['url_without_scheme_and_suffix'] = url_without_scheme_and_suffix
-    dict_url['name_without_suffix'] = re.sub(
-        r'[^a-zA-Z0-9]',
-        '-',
-        url_without_scheme_and_suffix,
-    )
-    return dict_url
+from re import sub
+from requests import request
+from os import mkdir
+from os.path import join, splitext
 
 
 def download(url, dir_for_save=''):
-    text_html = requests.request('GET', url).text
-    parsed_html_url = parse_url(url)
-    path_dir_for_files = join(
-        dir_for_save,
-        (parsed_html_url['name_without_suffix'] + '_files'),
-    )
-    os.mkdir(path_dir_for_files)
-    soup_from_html = BeautifulSoup(text_html, 'html5lib')
-    for img in soup_from_html.find_all('img', src=re.compile('^[^h]')):
-        parsed_img_url = parse_url(img['src'])
-        file_img = requests.request(
-            'GET',
-            urljoin(url, img['src']),
-        ).content
-        img['src'] = join(
-            (parsed_html_url['name_without_suffix'] + '_files'),
-            ''.join(
-                [parsed_html_url['netloc'],
-                 parsed_img_url['path'],
-                 parsed_img_url['suffix']],
-            ),
-        )
-        with open(
-                join(
-                    path_dir_for_files,
-                    ''.join(
-                        [parsed_html_url['netloc'],
-                         parsed_img_url['path'],
-                         parsed_img_url['suffix']],
-                    ),
-                ),
-                'wb') as infile:
-            infile.write(file_img)
-    with open(join(
-            dir_for_save,
-            (parsed_html_url['name_without_suffix'] + '.html'),
-    ), 'w') as infile:
-        infile.write(soup_from_html.decode(formatter="html5"))
-    return join(dir_for_save, (parsed_html_url['name_without_suffix'] + '.html'))
+    parsed_url_html = urlparse(url)
+    (path_html, suffix_html) = splitext(parsed_url_html.path)
+    name_html = get_name(parsed_url_html.netloc + path_html)
+    path_for_save_html = join(dir_for_save, name_html + '.html')
+    name_dir = name_html + '_files'
+    path_for_save_files = join(dir_for_save, name_dir)
+    mkdir(path_for_save_files)
+    soup_from_html = BeautifulSoup(request('GET', url).text, 'html5lib')
+    for elem in soup_from_html.find_all(['img', 'script', 'link']):
+        ref, attr = '', ''
+        if elem.get('src'):
+            ref = elem['src']
+            attr = 'src'
+        if elem.get('href'):
+            ref = elem['href']
+            attr = 'href'
+        parsed_url_elem = urlparse(ref)
+        (path_elem, suffix_elem) = splitext(parsed_url_elem.path)
+        if is_current_domain(ref, url):
+            name_elem = ''.join([
+                get_name(parsed_url_html.netloc + path_elem),
+                suffix_elem,
+            ])
+            elem[attr] = join(name_dir, name_elem)
+            file_elem = request('GET', urljoin(url, parsed_url_elem.path))
+            if elem.name == 'img':
+                decoding = 'wb'
+                file_elem = file_elem.content
+            else:
+                decoding = 'w'
+                file_elem = file_elem.text
+            output_path_elem = join(path_for_save_files, name_elem)
+            write_file(output_path_elem, file_elem, decoding)
+    output_text_html = soup_from_html.decode(formatter="html5")
+    write_file(path_for_save_html, output_text_html, 'w')
+    return path_for_save_html
 
 
-# download('http://www.malero-guitare.fr/cours/gratte/')
-# download('https://www.crummy.com/software/BeautifulSoup/bs4/doc.ru/bs4ru.html')
+def write_file(path, content, decoding):
+    with open(path, decoding) as infile:
+        infile.write(content)
+
+
+def is_current_domain(url_elem, url_html):
+    domain_elem = urlparse(url_elem).netloc
+    domain_html = urlparse(url_html).netloc
+    return domain_elem == domain_html or domain_elem == ''
+
+
+def get_name(path):
+    return sub(r'[^a-zA-Z0-9]', '-', path)
