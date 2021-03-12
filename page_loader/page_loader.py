@@ -7,11 +7,18 @@ from page_loader.cooking_html import cook, get_name
 
 
 def download(url, dir_for_save=''):
-    logging.basicConfig(
-        filename=join(dir_for_save, 'download.log'),
-        filemode='w',
-        level=logging.DEBUG,
+    logger = logging.getLogger('page_loader')
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('download.log')
+    fh.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.WARNING)
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     )
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    logger.addHandler(ch)
     parsed_url_html = urlparse(url)
     (path_html, suffix_html) = splitext(parsed_url_html.path)
     name_html = get_name(parsed_url_html.netloc + path_html)

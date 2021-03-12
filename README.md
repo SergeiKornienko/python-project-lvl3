@@ -9,3 +9,5 @@ pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/
 ```
 
 [![asciicast](https://asciinema.org/a/395941.svg)](https://asciinema.org/a/395941)
+
+[![asciicast](https://asciinema.org/a/398683.svg)](https://asciinema.org/a/398683)
