@@ -1,8 +1,11 @@
 import requests_mock
 from page_loader import download
 import tempfile
-from os import path
+from os.path import join
 from bs4 import BeautifulSoup
+from page_loader.cooking_html import cook
+import pytest
+from requests import exceptions
 
 
 HTML = 'tests/fixtures/index.html'
@@ -17,6 +20,12 @@ URL_JS = 'https://ru.hexlet.io/packs/js/runtime.js'
 NAME_JS = "ru-hexlet-io-packs-js-runtime.js"
 URL_CSS = 'https://ru.hexlet.io/assets/application.css'
 NAME_CSS = "ru-hexlet-io-assets-application.css"
+ASSETS = {
+    join(NAME_DIR, NAME_CSS): URL_CSS,
+    join(NAME_DIR, 'ru-hexlet-io-courses'): URL,
+    join(NAME_DIR, NAME_IMG): URL_IMG,
+    join(NAME_DIR, NAME_JS):  URL_JS
+}
 
 
 def test_download_file():
@@ -33,15 +42,38 @@ def test_download_file():
             mock.get(URL_JS, text='test')
             mock.get(URL_CSS, text='test')
             path_html = download(URL, dir_for_save=direct)
-        with open(path.join(direct, NAME_DIR, NAME_IMG), 'rb') as infile:
+        with open(join(direct, NAME_DIR, NAME_IMG), 'rb') as infile:
             assert infile.read() == img
-        with open(path.join(direct, NAME_DIR, NAME_JS), 'r') as infile:
+        with open(join(direct, NAME_DIR, NAME_JS), 'r') as infile:
             assert infile.read() == 'test'
-        with open(path.join(direct, NAME_DIR, NAME_CSS), 'r') as infile:
+        with open(join(direct, NAME_DIR, NAME_CSS), 'r') as infile:
             assert infile.read() == 'test'
-        assert path_html == path.join(direct, NAME_HTML)
+        assert path_html == join(direct, NAME_HTML)
         with open(path_html) as infile:
             assert BeautifulSoup(
                 infile.read(),
                 'html5lib',
             ) == BeautifulSoup(html_expected, 'html5lib')
+
+
+def test_cooking_html():
+    with open(HTML) as infile:
+        html_input = infile.read()
+    with open(EXPECT_HTML) as infile:
+        html_expected = infile.read()
+    cooked_html, dict_assets = cook(html_input, URL, NAME_DIR)
+    assert BeautifulSoup(
+        cooked_html,
+        'html5lib',
+    ) == BeautifulSoup(html_expected, 'html5lib')
+    assert dict_assets == ASSETS
+
+
+def test_http():
+    with pytest.raises(exceptions.RequestException):
+        download('https://ru.hexlet.io/cou')
+
+
+def test_os():
+    with pytest.raises(OSError):
+        download('https://ru.hexlet.io/courses', dir_for_save='/')

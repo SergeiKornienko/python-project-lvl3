@@ -14,9 +14,6 @@ def get_args():
         type=pathlib.Path,
         help='output dir (default: "сurrent directory")',
     )
-    parser.add_argument(
-        '-V', '--version', help='output the version number',
-    )
     args = parser.parse_args()
     url = args.url
     path = args.output
