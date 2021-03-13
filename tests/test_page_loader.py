@@ -53,7 +53,7 @@ def test_download_file():
             assert BeautifulSoup(
                 infile.read(),
                 'html5lib',
-            ) == BeautifulSoup(html_expected, 'html5lib')
+            ).prettify() == BeautifulSoup(html_expected, 'html5lib').prettify()
 
 
 def test_cooking_html():
@@ -65,7 +65,7 @@ def test_cooking_html():
     assert BeautifulSoup(
         cooked_html,
         'html5lib',
-    ) == BeautifulSoup(html_expected, 'html5lib')
+    ).prettify() == BeautifulSoup(html_expected, 'html5lib').prettify()
     assert dict_assets == ASSETS
 
 
