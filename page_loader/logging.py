@@ -11,8 +11,8 @@ formatter_ch = logging.Formatter(
     '%(levelname)s - %(message)s',
 )
 formatter_fh = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    )
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
 fh.setFormatter(formatter_fh)
 ch.setFormatter(formatter_ch)
 logger.addHandler(fh)

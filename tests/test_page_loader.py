@@ -24,7 +24,7 @@ ASSETS = {
     join(NAME_DIR, NAME_CSS): URL_CSS,
     join(NAME_DIR, NAME_HTML): URL,
     join(NAME_DIR, NAME_IMG): URL_IMG,
-    join(NAME_DIR, NAME_JS):  URL_JS
+    join(NAME_DIR, NAME_JS): URL_JS
 }
 
 

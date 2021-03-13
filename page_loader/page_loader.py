@@ -51,7 +51,7 @@ def download_assets(assets, dir_for_save):
     for path_asset, url_asset in assets.items():
         with Bar(
                 'Loading {asset}:'.format(asset=url_asset),
-                max=len(assets)/100,
+                max=len(assets) / 100,
                 suffix='%(percent)d%%') as bar_asset:
             try:
                 req = get(url_asset)
