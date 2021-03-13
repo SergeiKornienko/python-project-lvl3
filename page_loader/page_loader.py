@@ -4,6 +4,7 @@ from os import mkdir
 from os.path import join, splitext
 from page_loader.cooking_html import cook, get_name
 from page_loader.logging import logger
+from progress.bar import Bar
 
 
 def download(url, dir_for_save=''):
@@ -48,14 +49,19 @@ def get(url):
 
 def download_assets(assets, dir_for_save):
     for path_asset, url_asset in assets.items():
-        try:
-            req = get(url_asset)
-            content_asset = req.content
-            write_file(join(dir_for_save, path_asset), content_asset)
-        except exceptions.RequestException as error:
-            logger.warning('Error request: {a}'.format(a=error))
-        except OSError as error:
-            logger.warning('Error writing of file: {a}'.format(a=error))
+        with Bar(
+                'Loading {asset}:'.format(asset=url_asset),
+                max=len(assets)/100,
+                suffix='%(percent)d%%') as bar_asset:
+            try:
+                req = get(url_asset)
+                content_asset = req.content
+                write_file(join(dir_for_save, path_asset), content_asset)
+                bar_asset.next()
+            except exceptions.RequestException as error:
+                logger.warning('Error request: {a}'.format(a=error))
+            except OSError as error:
+                logger.warning('Error writing of file: {a}'.format(a=error))
 
 
 def make_dir(path):
