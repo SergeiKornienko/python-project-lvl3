@@ -24,7 +24,7 @@ def cook(html, url, name_dir):
             ])
             elem[attr] = join(name_dir, name_elem)
             assets[elem[attr]] = urljoin(url, parsed_url_elem.path)
-    return soup_from_html.prettify(formatter="html5"), assets
+    return soup_from_html.prettify(formatter="html"), assets
 
 
 def is_current_domain(url_elem, url_html):
