@@ -5,7 +5,7 @@ from os.path import join, splitext
 
 
 def cook(html, url, name_dir):
-    soup_from_html = BeautifulSoup(html, 'html5lib')
+    soup_from_html = BeautifulSoup(html, 'html.parser')
     assets = {}
     for elem in soup_from_html.find_all(['img', 'script', 'link']):
         ref, attr = '', ''
