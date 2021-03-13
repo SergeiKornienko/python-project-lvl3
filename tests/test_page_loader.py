@@ -22,7 +22,7 @@ URL_CSS = 'https://ru.hexlet.io/assets/application.css'
 NAME_CSS = "ru-hexlet-io-assets-application.css"
 ASSETS = {
     join(NAME_DIR, NAME_CSS): URL_CSS,
-    join(NAME_DIR, 'ru-hexlet-io-courses'): URL,
+    join(NAME_DIR, NAME_HTML): URL,
     join(NAME_DIR, NAME_IMG): URL_IMG,
     join(NAME_DIR, NAME_JS):  URL_JS
 }

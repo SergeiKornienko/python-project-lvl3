@@ -17,6 +17,8 @@ def cook(html, url, name_dir):
             attr = 'href'
         parsed_url_elem = urlparse(ref)
         (path_elem, suffix_elem) = splitext(parsed_url_elem.path)
+        if suffix_elem == '':
+            suffix_elem = '.html'
         if is_current_domain(ref, url):
             name_elem = ''.join([
                 get_name(urlparse(url).netloc + path_elem),
