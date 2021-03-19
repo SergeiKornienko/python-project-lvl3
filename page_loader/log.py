@@ -1,10 +1,10 @@
 import logging
 
 LOGLEVEL = {
-            0: logging.WARNING,
-            1: logging.INFO,
-            2: logging.DEBUG
-        }
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG
+}
 
 
 def setup(loglevel=0):

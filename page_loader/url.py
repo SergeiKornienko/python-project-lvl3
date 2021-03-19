@@ -23,6 +23,6 @@ def parse(url, dir_for_save, url_page=None):
     name_file = ''.join([
         to_name(netloc + path_file),
         suffix_file,
-        ])
+    ])
     path_to_file = join(dir_for_save, name_file)
     return name_file, parsed_url, path_to_file
