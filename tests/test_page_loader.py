@@ -2,8 +2,7 @@ import requests_mock
 from page_loader import download
 import tempfile
 from os.path import join
-from bs4 import BeautifulSoup
-from page_loader.cooking_html import cook
+from page_loader.html import prepare
 import pytest
 from requests import exceptions
 
@@ -50,10 +49,7 @@ def test_download_file():
             assert infile.read() == 'test'
         assert path_html == join(direct, NAME_HTML)
         with open(path_html) as infile:
-            assert BeautifulSoup(
-                infile.read(),
-                'html5lib',
-            ).prettify() == BeautifulSoup(html_expected, 'html5lib').prettify()
+            assert infile.read() == html_expected
 
 
 def test_cooking_html():
@@ -61,19 +57,20 @@ def test_cooking_html():
         html_input = infile.read()
     with open(EXPECT_HTML) as infile:
         html_expected = infile.read()
-    cooked_html, dict_assets = cook(html_input, URL, NAME_DIR)
-    assert BeautifulSoup(
-        cooked_html,
-        'html5lib',
-    ).prettify() == BeautifulSoup(html_expected, 'html5lib').prettify()
+    cooked_html, dict_assets = prepare(html_input, URL, NAME_DIR)
+    assert cooked_html == html_expected
     assert dict_assets == ASSETS
 
 
 def test_http():
     with pytest.raises(exceptions.RequestException):
-        download('https://ru.hexlet.io/cou')
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, status_code=404)
+            download(URL)
 
 
 def test_os():
     with pytest.raises(OSError):
-        download('https://ru.hexlet.io/courses', dir_for_save='/')
+        with requests_mock.Mocker() as mock:
+            mock.get(URL, text='test')
+            download(URL, dir_for_save='/')
