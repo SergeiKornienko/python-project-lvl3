@@ -2,6 +2,7 @@ from os.path import splitext
 from urllib.parse import urlparse, unquote
 from re import sub
 from os.path import join
+import logging
 
 
 def is_local(url_elem, url_html):
@@ -16,6 +17,7 @@ def to_name(path):
 
 def parse(url, dir_for_save, url_page=None):
     parsed_url = urlparse(url)
+    logging.debug(parsed_url)
     (path_file, suffix_file) = splitext(parsed_url.path)
     if suffix_file == '':
         suffix_file = '.html'
